@@ -10,14 +10,36 @@ router.get('/:userID', function(req, res, next) {
 
 
 router.get('/tasks/:userID',function(req, res, next){
-	var id=req.params.userID;
 	var tasks={};
+	var query=req.query;
+	var sortQ={_id:1};
+	
+	if(typeof(query.priority)!=="undefined")
+		query.priority=parseInt(query.priority);
+	
+	if(typeof(query.sort)!=="undefined"){
+		var QS=query.sort;
+		sortQ={};
+		if(typeof(query.order)!=="undefined"){
+			if(query.order==='ASC')
+				ord=1;
+			else if(query.order==='DESC')
+				ord=-1;
+			
+			sortQ[QS]=ord;
+			delete query.order;
+		}
+		else 
+			sortQ[QS]=1;
+		delete query.sort;
+	}
+	query.id=req.params.userID;
+	
 	try{
 		client.connect(err => {
 			if (err) throw err;
 			const db = client.db('todo');
-			query={id:id};
-			db.collection('Tasks').find(query).sort({ priority: -1}).toArray((err, result) => {
+			db.collection('Tasks').find(query).sort(sortQ).toArray((err, result) => {
 				if (err) throw err;
 				tasks={'tasks':result};
 				res.json(tasks);

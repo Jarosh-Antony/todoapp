@@ -96,7 +96,7 @@ var del=function(p){
 
 var loadTasks=function(){
 	
-	fetch('http://127.0.0.1:3000/todo/tasks/'+userID)
+	fetch('http://127.0.0.1:3000/todo/tasks/'+userID+'?sort=priority&order=DESC')
 	.then(response => response.json())
 	.then(data => {
 		var newT = document.getElementById('tasks');
