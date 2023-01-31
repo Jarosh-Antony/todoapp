@@ -25,6 +25,7 @@ router.get('/tasks/:userID',function(req, res, next){
 		});
 	}catch(error){
 		console.error(error);
+		res.status(400).send('');
 	}
 });
 
@@ -41,11 +42,13 @@ router.post('/tasks',function(req, res, next){
 				if (err) throw err;
 				const db = client.db('todo');
 				const result=db.collection('Tasks').insertOne(task);
+				
+				res.status(201).send('Successfully added');
 			});
 		}catch(error){
 			console.error(error);
+			res.status(400).send('');
 		}
-		res.status(201).send('Successfully added');
 	}
 });
 
@@ -60,10 +63,11 @@ router.put('/tasks',function(req, res, next){
 				if (err) throw err;
 			});
 		});
+		res.status(200).send('Successfully updated');
 	}catch(error){
 		console.error(error);
+		res.status(400).send('');
 	}
-	res.status(200).send('Successfully updated');
 });
 
 
@@ -73,14 +77,18 @@ router.delete('/tasks',function(req, res, next){
 		client.connect(err => {
 			if (err) throw err;
 			const db = client.db('todo');
-			const collection = db.collection("Tasks").deleteOne({ _id: new ObjectID(task._id) }, (err, result) => {
+			db.collection("Tasks").deleteOne({ _id: new ObjectID(task._id) }, (err, result) => {
 				if (err) throw err;
 			});
+			db.collection("Tasks").updateOne({ _id: new ObjectID('63d8f1c16821d863137c6ed3') },  { $inc: { count: 1 } }, (err, result) => {
+				if (err) throw err;
+			});
+			res.status(200).send('Successfully removed');
 		});
 	}catch(error){
 		console.error(error);
+		res.status(400).send('');
 	}
-	res.status(200).send('Successfully removed');
 });
 
 

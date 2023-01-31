@@ -1,14 +1,14 @@
 extends layout
 
 block content
-	a(href=`/report/`+userID) Report
+	a(href=`/todo/`+userID) Back
 	|  
 	a(href=`/`) Logout
-	<div id='tasks'>
+	<div id='count'>
 	</div>
 	
-	<div id='new'>
+	<div id='list'>
 	</div>
 	script.
 		var userID = !{JSON.stringify(userID)};
-	script(src='/javascripts/task.js')
+	script(src='/javascripts/report.js')
