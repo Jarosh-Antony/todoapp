@@ -12,10 +12,11 @@ router.get('/:userID', function(req, res, next) {
 router.get('/count/:userID',function(req, res, next){
 	var id=req.params.userID;
 	var query=req.query;
-	
+	console.log(query);
 	var counts={};
 	if(Object.keys(query).length === 0){
 		try{
+			console.log(Object.keys(query));
 			client.connect(err => {
 				if (err) throw err;
 				const db = client.db('todo');
@@ -31,6 +32,13 @@ router.get('/count/:userID',function(req, res, next){
 				}).toArray((err, result) => {
 					if (err) throw err;
 					counts.count=result;
+				});
+				db.collection('Tasks').findOne({status:"Deleted"},(err, result) => {
+					if (err) throw err;
+					for(i of counts.count){
+						if(i._id==='Deleted')
+							i.count=result.count;
+					}
 					res.json(counts);
 				});
 			});
@@ -44,12 +52,22 @@ router.get('/count/:userID',function(req, res, next){
 			client.connect(err => {
 				if (err) throw err;
 				const db = client.db('todo');
-				db.collection('Tasks').countDocuments(query, (err, count) => {
-					if (err) throw err;
-					console.log(query,count);
-					counts.count=count;
-					res.json(counts);
-				});
+				if(query.Status==="Deleted"){
+					db.collection('Tasks').findOne({status:"Deleted"},(err, result) => {
+						console.log(result)
+						if (err) throw err;
+						counts.count=result.count;
+						res.json(counts);
+					});
+				}
+				else {
+					db.collection('Tasks').countDocuments(query, (err, count) => {
+						if (err) throw err;
+						counts.count=count;
+						res.json(counts);
+					});
+
+				}
 			});
 		}catch(error){
 			console.error(error);
