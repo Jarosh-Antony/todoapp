@@ -14,10 +14,11 @@ router.post('/', function(req, res, next) {
 		db.collection('Users').find(req.body).toArray((err, result) => {
 			if (err) throw err;
 			if(result.length===0){
-				res.redirect('/login')
+				res.render('login');
 			}
 			else {
-				res.redirect('/todo');
+				let data = { name: 'John', age: 30 };
+				res.redirect('/todo/'+result[0]._id);
 			}
 		});
 	});

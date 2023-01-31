@@ -1,5 +1,12 @@
 extends layout
 
 block content
-  <a href="/">Logout</a>
-  h1 You have no tasks currently
+	<a href="/">Logout</a>
+	<div id='tasks'>
+	</div>
+	
+	<div id='new'>
+	</div>
+	script.
+		var userID = !{JSON.stringify(userID)};
+	script(src='/javascripts/task.js')
