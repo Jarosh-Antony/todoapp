@@ -12,11 +12,9 @@ router.get('/:userID', function(req, res, next) {
 router.get('/count/:userID',function(req, res, next){
 	var id=req.params.userID;
 	var query=req.query;
-	console.log(query);
 	var counts={};
 	if(Object.keys(query).length === 0){
 		try{
-			console.log(Object.keys(query));
 			client.connect(err => {
 				if (err) throw err;
 				const db = client.db('todo');
@@ -35,10 +33,29 @@ router.get('/count/:userID',function(req, res, next){
 				});
 				db.collection('Tasks').findOne({status:"Deleted"},(err, result) => {
 					if (err) throw err;
+					
+					var completed=true;
+					var incomplete=true;
+					var cancelled=true;
+					
 					for(i of counts.count){
 						if(i._id==='Deleted')
 							i.count=result.count;
+						else if(i._id==='Completed')
+							completed=false;
+						else if(i._id==='Incomplete')
+							incomplete=false;
+						else 
+							cancelled=false;
 					}
+					
+					if(completed)
+						counts.count.push({'_id':'Completed','count':0});
+					if(incomplete)
+						counts.count.push({'_id':'Incomplete','count':0});
+					if(cancelled)
+						counts.count.push({'_id':'Cancelled','count':0});
+					
 					res.json(counts);
 				});
 			});
@@ -54,7 +71,6 @@ router.get('/count/:userID',function(req, res, next){
 				const db = client.db('todo');
 				if(query.Status==="Deleted"){
 					db.collection('Tasks').findOne({status:"Deleted"},(err, result) => {
-						console.log(result)
 						if (err) throw err;
 						counts.count=result.count;
 						res.json(counts);
