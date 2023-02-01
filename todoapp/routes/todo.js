@@ -39,10 +39,13 @@ router.get('/tasks/:userID',function(req, res, next){
 		client.connect(err => {
 			if (err) throw err;
 			const db = client.db('todo');
-			db.collection('Tasks').find(query).sort(sortQ).toArray((err, result) => {
-				if (err) throw err;
+			db.collection('Tasks').find(query).sort(sortQ).toArray()
+			.then(result => {
 				tasks={'tasks':result};
 				res.json(tasks);
+			})
+			.catch(err => {
+				throw err;
 			});
 		});
 	}catch(error){
@@ -63,9 +66,13 @@ router.post('/tasks',function(req, res, next){
 			client.connect(err => {
 				if (err) throw err;
 				const db = client.db('todo');
-				const result=db.collection('Tasks').insertOne(task);
-				
-				res.status(201).send('Successfully added');
+				db.collection('Tasks').insertOne(task)
+				.then(result => {
+					res.status(201).send('Successfully added');
+				})
+				.catch(err => {
+					throw err;
+				});
 			});
 		}catch(error){
 			console.error(error);
@@ -81,11 +88,14 @@ router.put('/tasks',function(req, res, next){
 		client.connect(err => {
 			if (err) throw err;
 			const db = client.db('todo');
-			db.collection("Tasks").updateOne({ _id: new ObjectID(task._id) }, { $set: { status: task.status } }, (err, result) => {
-				if (err) throw err;
+			db.collection("Tasks").updateOne({ _id: new ObjectID(task._id) }, { $set: { status: task.status } })
+			.then(result => {
+				res.status(200).send('Successfully updated');
+			})
+			.catch(err => {
+				throw err;
 			});
 		});
-		res.status(200).send('Successfully updated');
 	}catch(error){
 		console.error(error);
 		res.status(400).send('');
@@ -99,13 +109,22 @@ router.delete('/tasks',function(req, res, next){
 		client.connect(err => {
 			if (err) throw err;
 			const db = client.db('todo');
-			db.collection("Tasks").deleteOne({ _id: new ObjectID(task._id) }, (err, result) => {
-				if (err) throw err;
+			db.collection("Tasks").deleteOne({ _id: new ObjectID(task._id) })
+			.then(result => {
+				
+				
+				db.collection("Tasks").updateOne({ _id: new ObjectID('63d8f1c16821d863137c6ed3') },  { $inc: { count: 1 } })
+				.then(result => {
+					res.status(200).send('Successfully removed');
+				})
+				.catch(err => {
+					throw err;
+				});
+				
+			})
+			.catch(err => {
+				throw err;
 			});
-			db.collection("Tasks").updateOne({ _id: new ObjectID('63d8f1c16821d863137c6ed3') },  { $inc: { count: 1 } }, (err, result) => {
-				if (err) throw err;
-			});
-			res.status(200).send('Successfully removed');
 		});
 	}catch(error){
 		console.error(error);

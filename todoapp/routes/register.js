@@ -12,9 +12,15 @@ router.post('/', function(req, res, next) {
 	client.connect(err => {
 		if (err) throw err;
 		const db = client.db('todo');
-		const result=db.collection('Users').insertOne(req.body);
+		db.collection('Users').insertOne(req.body)
+		.then(result => {
+			var id = result.insertedId;
+			res.redirect('/todo/'+id);
+		})
+		.catch(err => {
+			throw err;
+		});
 	});
-	res.redirect('/todo');
 });
 
 module.exports = router;

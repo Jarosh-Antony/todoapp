@@ -11,15 +11,17 @@ router.post('/', function(req, res, next) {
 	client.connect(err => {
 		if (err) throw err;
 		const db = client.db('todo');
-		db.collection('Users').find(req.body).toArray((err, result) => {
-			if (err) throw err;
+		db.collection('Users').find(req.body).toArray()
+		.then(result => {
 			if(result.length===0){
 				res.render('login');
 			}
 			else {
-				let data = { name: 'John', age: 30 };
 				res.redirect('/todo/'+result[0]._id);
 			}
+		})
+		.catch(err => {
+			throw err;
 		});
 	});
 });
