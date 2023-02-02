@@ -3,7 +3,12 @@ var tasks=[];
 
 var getCounts=function(){
 	
-	fetch('http://127.0.0.1:3000/report/count/'+userID)
+	fetch('http://127.0.0.1:3000/report/count',{
+		headers: {
+			'Content-Type': 'application/json',
+			'Authorization': `Bearer ${token}`,
+		},
+	})
 	.then(response => response.json())
 	.then(data => {
 		counts=data;
@@ -16,7 +21,12 @@ var getCounts=function(){
 
 var getTaskSummary=function(){
 	
-	fetch('http://127.0.0.1:3000/todo/tasks/'+userID+'?status=Completed&sort=priority&order=DESC')
+	fetch('http://127.0.0.1:3000/todo/tasks?status=Completed&sort=priority&order=DESC' ,{
+		headers: {
+			'Content-Type': 'application/json',
+			'Authorization': `Bearer ${token}`,
+		},
+	})
 	.then(response => response.json())
 	.then(data => {
 		var t={};
@@ -25,7 +35,12 @@ var getTaskSummary=function(){
 		tasks.push(t);
 		
 		
-		fetch('http://127.0.0.1:3000/todo/tasks/'+userID+'?status=Incomplete&sort=priority&order=DESC')
+		fetch('http://127.0.0.1:3000/todo/tasks?status=Incomplete&sort=priority&order=DESC', {
+			headers: {
+				'Content-Type': 'application/json',
+				'Authorization': `Bearer ${token}`,
+			},
+		})
 		.then(response => response.json())
 		.then(data => {
 			var t={};
@@ -34,7 +49,12 @@ var getTaskSummary=function(){
 			tasks.push(t);
 			
 			
-			fetch('http://127.0.0.1:3000/todo/tasks/'+userID+'?status=Cancelled&sort=priority&order=DESC')
+			fetch('http://127.0.0.1:3000/todo/tasks?status=Cancelled&sort=priority&order=DESC' ,{
+				headers: {
+					'Content-Type': 'application/json',
+					'Authorization': `Bearer ${token}`,
+				},
+			})
 			.then(response => response.json())
 			.then(data => {
 				var t={};

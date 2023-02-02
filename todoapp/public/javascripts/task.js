@@ -4,12 +4,13 @@ var postTask= function(){
     var p = document.querySelector('input[name="priority"]').value;
 	if(n.length!==0 && p.length!==0)
 	{
-		var data = { id: userID, name: n, priority: p };
-	
-		fetch('http://127.0.0.1:3000/todo/tasks', {
+		var data = { name: n, priority: p };
+		console.log(token);
+		fetch('http://127.0.0.1:3000/todo/tasks/create', {
 			method: 'POST', 
 			headers: {
-				'Content-Type': 'application/json'
+				'Content-Type': 'application/json',
+				'Authorization': `Bearer ${token}`,
 			},
 			body: JSON.stringify(data) 
 		})
@@ -49,10 +50,11 @@ var taskInput = function () {
 
 var put=function(statu,val){
 	var p = val;
-	fetch('http://127.0.0.1:3000/todo/tasks/', {
+	fetch('http://127.0.0.1:3000/todo/tasks/update', {
 		method: 'PUT',
 		headers: {
-			'Content-Type': 'application/json'
+			'Authorization': `Bearer ${token}`,
+			'Content-Type': 'application/json',
 		},
 		body: JSON.stringify({
 			'_id': p,
@@ -79,10 +81,11 @@ var cancel=function(p){
 
 
 var del=function(p){
-	fetch('http://127.0.0.1:3000/todo/tasks/', {
+	fetch('http://127.0.0.1:3000/todo/tasks/delete', {
 		method: 'DELETE',
 		headers: {
-			'Content-Type': 'application/json'
+			'Content-Type': 'application/json',
+			'Authorization': `Bearer ${token}`,
 		},
 		body: JSON.stringify({
 			'_id': p,
@@ -96,7 +99,12 @@ var del=function(p){
 
 var loadTasks=function(){
 	
-	fetch('http://127.0.0.1:3000/todo/tasks/'+userID+'?sort=priority&order=DESC')
+	fetch('http://127.0.0.1:3000/todo/tasks?sort=priority&order=DESC',{
+		headers: {
+			'Content-Type': 'application/json',
+			'Authorization': `Bearer ${token}`,
+		},
+	})
 	.then(response => response.json())
 	.then(data => {
 		var newT = document.getElementById('tasks');

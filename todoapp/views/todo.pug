@@ -1,7 +1,7 @@
 extends layout
 
 block content
-	a(href=`/report/`+userID) Report
+	a(href=`/report/?token=`+token) Report
 	|  
 	a(href=`/`) Logout
 	<div id='tasks'>
@@ -10,5 +10,5 @@ block content
 	<div id='new'>
 	</div>
 	script.
-		var userID = !{JSON.stringify(userID)};
+		var token = !{JSON.stringify(token)};
 	script(src='/javascripts/task.js')
