@@ -4,9 +4,8 @@ block content
 	a(href=`/todo/?token=`+token) Back
 	|  
 	a(href=`/`) Logout
-	<div id='report'>
-		
-	</div>
+	div#report
+
 	script.
 		var token = !{JSON.stringify(token)};
 	script(src='/javascripts/report.js')

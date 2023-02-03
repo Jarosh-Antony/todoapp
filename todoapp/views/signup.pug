@@ -2,28 +2,19 @@ extends layout
 
 block content
 		
-	
-	<div id="intro">   
-	<h1> Register </h1>
-	</div>
-	<form id="signup">
-	<div>
-	<label>Name:</label>
-	<input type="text" name="name" required />
-	</div>
-	<div>
-	<label>Email:</label>
-	<input type="email" name="email" required />
-	</div>
-	<div>
-	<label>Password:</label>
-	<input type="password" name="password" required />
-	</div>
-
-	<div>
-	<input type="submit" value = "Register">
-	</div>
-	</form>
-	<a href="/login">Log In</a>
-
+	div#intro
+		h1 Register
+	form#signup
+		div
+			label Name:
+			input(type='text', name='name', required=true)
+		div
+			label Email:
+			input(type='email', name='email', required=true)
+		div
+			label Password:
+			input(type='password', name='password', required=true)
+		div
+			input(type='submit', value='Register')
+	a(href='/login') Log In
 	script(src='/javascripts/signup.js')
