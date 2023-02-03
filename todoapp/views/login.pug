@@ -1,11 +1,12 @@
 extends layout
 
 block content
+		
 	<div id="intro">   
 	<h1> Login </h1>
-	#{error}
 	</div>
-	<form action="/login" method="POST" id="login">
+	
+	<form id="login">
 	<div>
 	<label>Email:</label>
 	<input type="email" name="email" required />
@@ -16,7 +17,10 @@ block content
 	</div>
 
 	<div>
-	<input type="submit" value = "Log in">
+	<input type="submit" value = "Login">
 	</div>
 	</form>
+	
 	<a href="/register">Register</a>
+
+	script(src='/javascripts/login.js')

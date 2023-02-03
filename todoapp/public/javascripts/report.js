@@ -61,8 +61,8 @@ var getTaskSummary=function(){
 				t.name='Cancelled';
 				t.task=data;
 				tasks.push(t);
-				
-				renderReport();
+				if(data.error!=='Invalid token')
+					renderReport();
 				
 				
 			})
@@ -102,7 +102,6 @@ var renderReport=function(){
 	var completed = document.createElement('DIV');
 	var deleted = document.createElement('DIV');
 	
-	console.log(counts.count);
 	for(i of counts.count){
 		if(i._id==='Cancelled'){
 			cancelledH.innerHTML+=i.count+" )\n";

@@ -5,7 +5,6 @@ var postTask= function(){
 	if(n.length!==0 && p.length!==0)
 	{
 		var data = { name: n, priority: p };
-		console.log(token);
 		fetch('http://127.0.0.1:3000/todo/tasks/create', {
 			method: 'POST', 
 			headers: {
