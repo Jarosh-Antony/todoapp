@@ -3,7 +3,7 @@ var tasks=[];
 
 var getCounts=function(){
 	
-	fetch(`${hostname}/report/count?Status=Deleted`,{
+	fetch(`${hostname}/report/count`,{
 		headers: {
 			'Content-Type': 'application/json',
 			'Authorization': `Bearer ${token}`,
