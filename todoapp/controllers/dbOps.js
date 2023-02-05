@@ -1,5 +1,5 @@
 const MongoClient = require('mongodb').MongoClient;
-const uri = 'mongodb://localhost:27017/todo';
+const uri = 'mongodb://mongo:Q9ug2Ry2OvK9hTZeNijx@containers-us-west-169.railway.app:7508';
 const { ObjectID } = require('mongodb');
 const client = new MongoClient(uri, { useNewUrlParser: true });
 
