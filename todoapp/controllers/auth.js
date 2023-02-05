@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
-const secret = 'secret-key';
+const app = require('../app');
+const secret = process.env.SECRET_KEY;
 const dbOps=require('./dbOps');
 const { ObjectID } = require('mongodb');
 
@@ -28,12 +29,12 @@ tokenize=function(payload){
 
 
 exports.login = (req, res) => {
-	res.render('login');
+	res.render('login',{ hostname: process.env.HOSTNAME });
 };
 
 
 exports.signup = (req, res) => {
-	res.render('signup');
+	res.render('signup',{ hostname: process.env.HOSTNAME });
 };
 
 

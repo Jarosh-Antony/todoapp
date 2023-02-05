@@ -1,5 +1,6 @@
 const MongoClient = require('mongodb').MongoClient;
-const uri = 'mongodb://mongo:Q9ug2Ry2OvK9hTZeNijx@containers-us-west-169.railway.app:7508';
+const app = require('../app');
+const uri = process.env.DB;
 const { ObjectID } = require('mongodb');
 const client = new MongoClient(uri, { useNewUrlParser: true });
 

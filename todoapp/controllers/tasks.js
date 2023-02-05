@@ -1,10 +1,11 @@
 const auth=require('./auth');
 const dbOps=require('./dbOps');
+const app = require('../app');
 const { ObjectID } = require('mongodb');
 
 exports.index = (req, res) => {
 	let token = req.query.token;
-	res.render('todo',{token:token});
+	res.render('todo',{token:token,hostname: process.env.HOSTNAME});
 };
 
 

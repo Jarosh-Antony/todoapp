@@ -5,7 +5,7 @@ var postTask= function(){
 	if(n.length!==0 && p.length!==0)
 	{
 		var data = { name: n, priority: p };
-		fetch('http://127.0.0.1:3000/todo/tasks/create', {
+	fetch(`${hostname}/todo/tasks/create`, {
 			method: 'POST', 
 			headers: {
 				'Content-Type': 'application/json',
@@ -49,7 +49,7 @@ var taskInput = function () {
 
 var put=function(statu,val){
 	var p = val;
-	fetch('http://127.0.0.1:3000/todo/tasks/update', {
+	fetch(`${hostname}/todo/tasks/update`, {
 		method: 'PUT',
 		headers: {
 			'Authorization': `Bearer ${token}`,
@@ -80,7 +80,7 @@ var cancel=function(p){
 
 
 var del=function(p){
-	fetch('http://127.0.0.1:3000/todo/tasks/delete', {
+	fetch(`${hostname}/todo/tasks/delete`, {
 		method: 'DELETE',
 		headers: {
 			'Content-Type': 'application/json',
@@ -98,7 +98,7 @@ var del=function(p){
 
 var loadTasks=function(){
 	
-	fetch('http://127.0.0.1:3000/todo/tasks?sort=priority&order=DESC',{
+	fetch(`${hostname}/todo/tasks?sort=priority&order=DESC`,{
 		headers: {
 			'Content-Type': 'application/json',
 			'Authorization': `Bearer ${token}`,

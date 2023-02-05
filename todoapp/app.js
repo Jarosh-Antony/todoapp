@@ -3,7 +3,7 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
-
+require('dotenv').config();
 var indexRouter = require('./routes/index');
 var authRouter = require('./routes/auth');
 var todoRouter = require('./routes/todo');
@@ -11,8 +11,7 @@ var reportRouter = require('./routes/report');
 
 
 var app = express();
-
-//app.listen(3000, 'localhost');
+const hostname = process.env.HOSTNAME;
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));

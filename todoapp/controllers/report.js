@@ -1,9 +1,10 @@
 const auth = require('./auth');
 const dbOps=require('./dbOps');
+const app = require('../app');
 
 exports.index = (req, res) => {
 	let token = req.query.token;
-	res.render('report',{token:token});
+	res.render('report',{token:token, hostname: process.env.HOSTNAME});
 };
 
 

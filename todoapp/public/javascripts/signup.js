@@ -8,7 +8,7 @@ form.addEventListener("submit", function(event) {
 	const password = form.elements.password.value;
 	const data={name:name,email:email,password:password};
 	
-	fetch('http://127.0.0.1:3000/auth/api/signup', {
+	fetch(`${hostname}/auth/api/signup`, {
 		method: 'POST', 
 		headers: {
 			'Content-Type': 'application/json',

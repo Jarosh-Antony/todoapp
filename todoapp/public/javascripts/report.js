@@ -3,7 +3,7 @@ var tasks=[];
 
 var getCounts=function(){
 	
-	fetch('http://127.0.0.1:3000/report/count',{
+	fetch(`${hostname}/report/count`,{
 		headers: {
 			'Content-Type': 'application/json',
 			'Authorization': `Bearer ${token}`,
@@ -21,7 +21,7 @@ var getCounts=function(){
 
 var getTaskSummary=function(){
 	
-	fetch('http://127.0.0.1:3000/todo/tasks?status=Completed&sort=priority&order=DESC' ,{
+	fetch(`${hostname}/todo/tasks?status=Completed&sort=priority&order=DESC` ,{
 		headers: {
 			'Content-Type': 'application/json',
 			'Authorization': `Bearer ${token}`,
@@ -35,7 +35,7 @@ var getTaskSummary=function(){
 		tasks.push(t);
 		
 		
-		fetch('http://127.0.0.1:3000/todo/tasks?status=Incomplete&sort=priority&order=DESC', {
+		fetch(`${hostname}/todo/tasks?status=Incomplete&sort=priority&order=DESC`, {
 			headers: {
 				'Content-Type': 'application/json',
 				'Authorization': `Bearer ${token}`,
@@ -49,7 +49,7 @@ var getTaskSummary=function(){
 			tasks.push(t);
 			
 			
-			fetch('http://127.0.0.1:3000/todo/tasks?status=Cancelled&sort=priority&order=DESC' ,{
+			fetch(`${hostname}/todo/tasks?status=Cancelled&sort=priority&order=DESC` ,{
 				headers: {
 					'Content-Type': 'application/json',
 					'Authorization': `Bearer ${token}`,
