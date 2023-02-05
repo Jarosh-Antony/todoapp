@@ -68,7 +68,7 @@ exports.api_signup = (req, res) => {
 		.then(result => {
 			
 			const token = tokenize({ id:id });
-			res.status(200).json({token:token});
+			res.status(200).json({success:true,token:token});
 		})
 	})
 	.catch(err => {
