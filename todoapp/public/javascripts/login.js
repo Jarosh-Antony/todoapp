@@ -16,8 +16,14 @@ form.addEventListener("submit", function(event) {
 	})
 	.then(response => response.json())
 	.then(data => {
-		event.preventDefault();
-		window.location.href = `/todo?token=${data.token}`;
+		if(data.success){
+			event.preventDefault();
+			window.location.href = `/todo?token=${data.token}`;
+		}
+		else {
+			const error = document.getElementById("error");
+			error.innerHTML=data.message;
+		}
 	}).catch(error => console.error(error));
 	
 });

@@ -43,11 +43,11 @@ exports.api_login = (req, res) => {
 	dbOps.findOne('Users',req.body)
 	.then(result => {
 		if(result===null || result.length===0){
-			res.status(401).render('login',{error:'Unauthorized'});
+			res.status(200).json({success:false,message:'Invalid email/password'});
 		}
 		else {
 			const token = tokenize({ id:result._id });
-			res.status(200).json({token:token});
+			res.status(200).json({success:true,token:token});
 		}
 	})
 	.catch(err => {
