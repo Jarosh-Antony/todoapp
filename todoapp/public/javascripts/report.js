@@ -3,7 +3,7 @@ var tasks=[];
 
 var getCounts=function(){
 	
-	fetch(`${hostname}/report/count`,{
+	fetch(`${hostname}/report/count?Status=Deleted`,{
 		headers: {
 			'Content-Type': 'application/json',
 			'Authorization': `Bearer ${token}`,
@@ -102,18 +102,18 @@ var renderReport=function(){
 	var completed = document.createElement('DIV');
 	var deleted = document.createElement('DIV');
 	
-	for(i of counts.count){
-		if(i._id==='Cancelled'){
-			cancelledH.innerHTML+=i.count+" )\n";
+	for(i in counts.count){
+		if(i==='Cancelled'){
+			cancelledH.innerHTML+=counts.count[i]+" )\n";
 		}
-		else if(i._id==='Completed'){
-			completedH.innerHTML+=i.count+" )\n";
+		else if(i==='Completed'){
+			completedH.innerHTML+=counts.count[i]+" )\n";
 		}
-		else if(i._id==='Incomplete'){
-			pendingH.innerHTML+=i.count+" )\n";
+		else if(i==='Incomplete'){
+			pendingH.innerHTML+=counts.count[i]+" )\n";
 		}
-		else if(i._id==='Deleted'){
-			deletedH.innerHTML+=i.count+" )\n";
+		else if(i==='Deleted'){
+			deletedH.innerHTML+=counts.count[i]+" )\n";
 		}
 	}
 	

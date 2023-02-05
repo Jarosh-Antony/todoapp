@@ -24,6 +24,7 @@ exports.get = (req, res) => {
 			var QS=query.sort;
 			sortQ={};
 			if(typeof(query.order)!=="undefined"){
+				ord=1;
 				if(query.order==='ASC')
 					ord=1;
 				else if(query.order==='DESC')

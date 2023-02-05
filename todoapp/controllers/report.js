@@ -14,8 +14,8 @@ exports.count = (req, res) => {
 		
 		var id=v.id;
 		var query=req.query;
-		var counts={count:[]};
-		if(Object.keys(query).length === 0){
+		var counts={success:true,count:[]};
+		if(query.Status===undefined){
 			try{
 				dbOps.aggregator('Tasks',id)
 				.then(result => result.toArray())
@@ -46,7 +46,12 @@ exports.count = (req, res) => {
 						if(cancelled)
 							counts.count.push({'_id':'Cancelled','count':0});
 						
-						res.status(200).json(counts);
+						output={'success':true,'count':{}};
+						for(i of counts.count){
+							output.count[i._id]=i.count;
+						}
+						
+						res.status(200).json(output);
 					})
 					.catch(err => {
 						throw err;
