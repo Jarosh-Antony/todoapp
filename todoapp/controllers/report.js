@@ -1,4 +1,4 @@
-const auth = require('./auth');
+const jwt = require('./jwt');
 const dbOps=require('./dbOps');
 const app = require('../app');
 
@@ -9,7 +9,7 @@ exports.index = (req, res) => {
 
 
 exports.count = (req, res) => {
-	const v=auth.validate(req);
+	const v=jwt.validate(req);
 	if(v.valid){
 		
 		var id=v.id;
@@ -62,7 +62,7 @@ exports.count = (req, res) => {
 				});
 			}catch(error){
 				console.error(error);
-				res.status(500).send({ error: 'Internal Server Error' });
+				res.status(500).json({ error: 'Internal Server Error' });
 			}
 		}
 		else {
@@ -71,6 +71,7 @@ exports.count = (req, res) => {
 					dbOps.findOne('Tasks',{id:id, status:"Deleted"})
 					.then(result => {
 						counts.count=result.count;
+						counts.success=true;
 						res.status(200).json(counts);
 					})
 					.catch(err => {
@@ -82,6 +83,7 @@ exports.count = (req, res) => {
 					dbOps.countDocuments('Tasks',query)
 					.then(result => {
 						counts.count=result;
+						counts.success=true;
 						res.status(200).json(counts);
 					})
 					.catch(err => {
@@ -90,11 +92,11 @@ exports.count = (req, res) => {
 				}
 			}catch(error){
 				console.error(error);
-				res.status(500).send({ error: 'Internal Server Error' });
+				res.status(500).json({ error: 'Internal Server Error' });
 			}
 		}
 	}
 	else 
-		res.status(401).send({ error: 'Invalid token' });
+		res.status(200).json({ success:false,error: 'Invalid token' });
 };
 

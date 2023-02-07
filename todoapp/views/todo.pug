@@ -1,9 +1,11 @@
 extends layout
 
 block content
-	a(href='/report') Report
-	|&nbsp;&nbsp;&nbsp;&nbsp;
-	a(href='/' onclick='logout()') Logout
+	div#header
+		a(href='/report') Report
+		|&nbsp;&nbsp;&nbsp;&nbsp;
+		a(href='' onclick='logout()') Logout
+	div#error
 	div#tasks
 	div#new
 	script.

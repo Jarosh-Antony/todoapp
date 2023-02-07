@@ -6,17 +6,24 @@ var postTask= function(){
 	{
 		var data = { name: n, priority: p };
 		const token = localStorage.getItem('token');
-		fetch(`${hostname}/todo/tasks/create`, {
-			method: 'POST', 
-			headers: {
-				'Content-Type': 'application/json',
-				'Authorization': `Bearer ${token}`,
-			},
-			body: JSON.stringify(data) 
-		})
-		.then(response => {
-			loadTasks();
-		});
+		if(token===null)
+			loginFirst();
+		else {
+			
+			fetch(`${hostname}/todo/tasks/create`, {
+				method: 'POST', 
+				headers: {
+					'Content-Type': 'application/json',
+					'Authorization': `Bearer ${token}`,
+				},
+				body: JSON.stringify(data) 
+			})
+			.then(response => response.json())
+			.then(data => {
+				if(data.success)
+					loadTasks();
+			});
+		}
 	}
 };
 
@@ -51,21 +58,27 @@ var taskInput = function () {
 var put=function(statu,val){
 	var p = val;
 	const token = localStorage.getItem('token');
-	fetch(`${hostname}/todo/tasks/update`, {
-		method: 'PUT',
-		headers: {
-			'Authorization': `Bearer ${token}`,
-			'Content-Type': 'application/json',
-		},
-		body: JSON.stringify({
-			'_id': p,
-			'status':statu,
+	if(token===null)
+		loginFirst();
+	else {
+		fetch(`${hostname}/todo/tasks/update`, {
+			method: 'PUT',
+			headers: {
+				'Authorization': `Bearer ${token}`,
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify({
+				'_id': p,
+				'status':statu,
+			})
 		})
-	})
-	.then(response => {
-		loadTasks();
-	})
-	.catch(error => console.error(error));
+		.then(response => response.json())
+		.then(data => {
+			if(data.success)
+				loadTasks();
+		})
+		.catch(error => console.error(error));
+	}
 };
 
 var complete=function(p){
@@ -83,115 +96,137 @@ var cancel=function(p){
 
 var del=function(p){
 	const token = localStorage.getItem('token');
-	fetch(`${hostname}/todo/tasks/delete`, {
-		method: 'DELETE',
-		headers: {
-			'Content-Type': 'application/json',
-			'Authorization': `Bearer ${token}`,
-		},
-		body: JSON.stringify({
-			'_id': p,
+	if(token===null)
+		loginFirst();
+	else {
+		fetch(`${hostname}/todo/tasks/delete`, {
+			method: 'DELETE',
+			headers: {
+				'Content-Type': 'application/json',
+				'Authorization': `Bearer ${token}`,
+			},
+			body: JSON.stringify({
+				'_id': p,
+			})
 		})
-	})
-	.then(response => {
-		loadTasks();
-	})
-	.catch(error => console.error(error));
+		.then(response => response.json())
+		.then(data => {
+			if(data.success)
+				loadTasks();
+		})
+		.catch(error => console.error(error));
+	}
 };
+
+
+var loginFirst=function(){
+	const header=document.getElementById("header");
+	header.innerHTML="";
+	const error = document.getElementById("error");
+	error.innerHTML=`<a href="${hostname}/auth/login">Login</a> First`;
+};
+
 
 var loadTasks=function(){
 	const token = localStorage.getItem('token');
-	fetch(`${hostname}/todo/tasks?sort=priority&order=DESC`,{
-		headers: {
-			'Content-Type': 'application/json',
-			'Authorization': `Bearer ${token}`,
-		},
-	})
-	.then(response => response.json())
-	.then(data => {
-		var newT = document.getElementById('tasks');
-		newT.innerHTML="";
-		
-		var ol = document.createElement("OL");
-		for(i in data.tasks){
-			var t=document.createElement("LI");
-			task=data.tasks[i]
-			
-			
-			var T=task.name+' ( '+task.priority+' ) [ ';
-			if(task.status==='Completed'){
-				T+='&#x2713';
-			}
-			else if(task.status==='Cancelled'){
-				T+='&#x2717';
-			}
-			T+=']&nbsp;&nbsp;&nbsp;&nbsp;';
-			t.innerHTML=T;
-			
-			if(task.status !== 'Cancelled'){
+	if(token===null){
+		loginFirst();
+	}
+	else {
+		fetch(`${hostname}/todo/tasks?sort=priority&order=DESC`,{
+			headers: {
+				'Content-Type': 'application/json',
+				'Authorization': `Bearer ${token}`,
+			},
+		})
+		.then(response => response.json())
+		.then(data => {
+			if(data.success){
+				var newT = document.getElementById('tasks');
+				newT.innerHTML="";
 				
-				var statusButton = document.createElement('BUTTON');
-				statusButton.setAttribute('value',task._id);
-				statusButton.setAttribute('name','status');
-				
-				if(task.status==='Completed')
-				{
+				var ol = document.createElement("OL");
+				for(i in data.tasks){
+					var t=document.createElement("LI");
+					task=data.tasks[i]
+					
+					
+					var T=task.name+' ( '+task.priority+' ) [ ';
+					if(task.status==='Completed'){
+						T+='&#x2713';
+					}
+					else if(task.status==='Cancelled'){
+						T+='&#x2717';
+					}
+					T+=']&nbsp;&nbsp;&nbsp;&nbsp;';
+					t.innerHTML=T;
+					
+					if(task.status !== 'Cancelled'){
+						
+						var statusButton = document.createElement('BUTTON');
+						statusButton.setAttribute('value',task._id);
+						statusButton.setAttribute('name','status');
+						
+						if(task.status==='Completed')
+						{
+							statusButton.addEventListener('click', (event) => {
+								incomplete(event.target.value);
+							});
+							statusButton.innerHTML='Incomplete';
+						}
+						else 
+						{
+							statusButton.addEventListener('click', (event) => {
+								complete(event.target.value);
+							});
+							statusButton.innerHTML='Completed';
+						}
+						t.appendChild(statusButton);
+						
+						statusButton = document.createElement('BUTTON');
+						statusButton.innerHTML='Cancel';
+						statusButton.setAttribute('value',task._id);
+						statusButton.addEventListener('click', (event) => {
+							cancel(event.target.value);
+						});
+						statusButton.setAttribute('name','status');
+						t.appendChild(statusButton);
+					}
+					
+					var statusButton = document.createElement('BUTTON');
+					statusButton.innerHTML='Delete';
+					statusButton.setAttribute('value',task._id);
+					statusButton.setAttribute('name','delete');
 					statusButton.addEventListener('click', (event) => {
-						incomplete(event.target.value);
+						del(event.target.value);
 					});
-					statusButton.innerHTML='Incomplete';
+					t.appendChild(statusButton);
+					
+					ol.appendChild(t);
 				}
-				else 
-				{
-					statusButton.addEventListener('click', (event) => {
-						complete(event.target.value);
-					});
-					statusButton.innerHTML='Completed';
-				}
-				t.appendChild(statusButton);
+				newT.appendChild(ol);
+				var addTaskButton = document.createElement('BUTTON');
+				addTaskButton.innerHTML='+Add new task';
+				addTaskButton.setAttribute('name','newTask');
+				addTaskButton.addEventListener("click",taskInput);
 				
-				statusButton = document.createElement('BUTTON');
-				statusButton.innerHTML='Cancel';
-				statusButton.setAttribute('value',task._id);
-				statusButton.addEventListener('click', (event) => {
-					cancel(event.target.value);
-				});
-				statusButton.setAttribute('name','status');
-				t.appendChild(statusButton);
+				var newT = document.getElementById('new');
+				newT.innerHTML="";
+				newT.appendChild(addTaskButton);
 			}
-			
-			var statusButton = document.createElement('BUTTON');
-			statusButton.innerHTML='Delete';
-			statusButton.setAttribute('value',task._id);
-			statusButton.setAttribute('name','delete');
-			statusButton.addEventListener('click', (event) => {
-				del(event.target.value);
-			});
-			t.appendChild(statusButton);
-			
-			ol.appendChild(t);
-		}
-		newT.appendChild(ol);
-	})
-	.catch(error => console.error(error));
-	var addTaskButton = document.createElement('BUTTON');
-	addTaskButton.innerHTML='+Add new task';
-	addTaskButton.setAttribute('name','newTask');
-	addTaskButton.addEventListener("click",taskInput);
-	
-	var newT = document.getElementById('new');
-	newT.innerHTML="";
-	newT.appendChild(addTaskButton);
+			else {
+				loginFirst();
+			}
+		})
+		.catch(error => console.error(error));
+	}
 	
 };
 
 var logout=function(){
-	const timestamp = new Date().getTime();
-    document.querySelectorAll('script[src],link[href]').forEach(element => {
-		element.src = `${element.src}?v=${timestamp}`;
-		element.href = `${element.href}?v=${timestamp}`;
-    });
+	event.preventDefault();
 	localStorage.removeItem('token');
+	window.location.href = '/';
 };
 
 

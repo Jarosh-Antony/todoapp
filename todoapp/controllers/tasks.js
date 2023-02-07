@@ -1,4 +1,4 @@
-const auth=require('./auth');
+const jwt=require('./jwt');
 const dbOps=require('./dbOps');
 const app = require('../app');
 const { ObjectID } = require('mongodb');
@@ -11,7 +11,7 @@ exports.index = (req, res) => {
 
 exports.get = (req, res) => {
 	
-	const v=auth.validate(req);
+	const v=jwt.validate(req);
 	if(v.valid){
 		var tasks={};
 		var query=req.query;
@@ -52,7 +52,7 @@ exports.get = (req, res) => {
 			.then(unsorted => unsorted.sort(sortQ))
 			.then(result => result.toArray())
 			.then(result => {
-				tasks={'tasks':result};
+				tasks={success:true,'tasks':result};
 				res.status(200).json(tasks);
 			})
 			.catch(err => {
@@ -60,22 +60,22 @@ exports.get = (req, res) => {
 			});
 		}catch(error){
 			console.error(error);
-			res.status(500).send({ error: 'Internal Server Error' });
+			res.status(500).json({ error: 'Internal Server Error' });
 		}
 	}
 	else 
-		res.status(401).send({ error: 'Invalid token' });
+		res.status(200).json({ success:false,error: 'Invalid token' });
 };
 
 
 
 exports.create = (req, res) => {
 	
-	const v=auth.validate(req);
+	const v=jwt.validate(req);
 	if(v.valid){
 		task=req.body;
 		if(task.name.length===0 && task.priority.length===0)
-			res.status(400).send({ error: 'Input cannot be empty'});
+			res.status(200).json({ status:false,error: 'Input cannot be empty'});
 		else{
 			task['id']=v.id;
 			task['priority']=parseInt(task['priority'])
@@ -83,50 +83,50 @@ exports.create = (req, res) => {
 			try{
 				dbOps.insertOne('Tasks',task)
 				.then(result => {
-					res.status(201).send({message:'Successfully added'});
+					res.status(201).json({success:true,message:'Successfully added'});
 				})
 				.catch(err => {
 					throw err;
 				});
 			}catch(error){
 				console.error(error);
-				res.status(500).send({ error: 'Internal Server Error' });
+				res.status(500).json({ error: 'Internal Server Error' });
 			}
 		}
 	}
 	else 
-		res.status(401).send({ error: 'Invalid token'});
+		res.status(200).json({ success:false,error: 'Invalid token'});
 };
 
 
 
 exports.update = (req, res) => {
-	const v=auth.validate(req);
+	const v=jwt.validate(req);
 	if(v.valid){
 	
 		task=req.body;
 		try{
 			dbOps.updateOne('Tasks',{ _id: new ObjectID(task._id),id:v.id }, { $set: { status: task.status } })
 			.then(result => {
-				res.status(200).send({message:'Successfully updated'});
+				res.status(200).json({success:true});
 			})
 			.catch(err => {
 				throw err;
 			});
 		}catch(error){
 			console.error(error);
-			return res.status(500).send({ error: 'Internal Server Error' });
+			return res.status(500).json({ error: 'Internal Server Error' });
 		}
 	}
 	else 
-		res.status(401).send({ error: 'Invalid token'});
+		res.status(200).json({ success:false,error: 'Invalid token'});
 };
 
 
 
 
 exports.remove = (req, res) => {
-	const v=auth.validate(req);
+	const v=jwt.validate(req);
 	if(v.valid){
 		
 		task=req.body;
@@ -135,7 +135,7 @@ exports.remove = (req, res) => {
 			.then(result => {
 				dbOps.updateOne('Tasks',{ id:v.id,status:'Deleted' },  { $inc: { count: 1 } })
 				.then(result => {
-					res.status(200).send({message:'Successfully removed'});
+					res.status(200).json({success:true});
 				})
 				.catch(err => {
 					throw err;
@@ -147,10 +147,10 @@ exports.remove = (req, res) => {
 			});
 		}catch(error){
 			console.error(error);
-			res.status(500).send({ error: 'Internal Server Error' });
+			res.status(500).json({ success:false,error: 'Internal Server Error' });
 		}
 	}
 	else 
-		res.status(401).send({ error: 'Invalid token'});
+		res.status(200).json({ success:false,error: 'Invalid token'});
 };
 

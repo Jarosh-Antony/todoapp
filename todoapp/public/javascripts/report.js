@@ -1,41 +1,12 @@
 var counts={};
 var tasks=[];
-var token="";
 var getCounts=function(){
 	
-	fetch(`${hostname}/report/count`,{
-		headers: {
-			'Content-Type': 'application/json',
-			'Authorization': `Bearer ${token}`,
-		},
-	})
-	.then(response => response.json())
-	.then(data => {
-		counts=data;
-		getTaskSummary();
-	})
-	.catch(error => console.error(error));
-	
-};
-
-
-var getTaskSummary=function(){
-	
-	fetch(`${hostname}/todo/tasks?status=Completed&sort=priority&order=DESC` ,{
-		headers: {
-			'Content-Type': 'application/json',
-			'Authorization': `Bearer ${token}`,
-		},
-	})
-	.then(response => response.json())
-	.then(data => {
-		var t={};
-		t.name='Completed';
-		t.task=data;
-		tasks.push(t);
-		
-		
-		fetch(`${hostname}/todo/tasks?status=Incomplete&sort=priority&order=DESC`, {
+	const token = localStorage.getItem('token');
+	if(token===null)
+		loginFirst();
+	else{
+		fetch(`${hostname}/report/count`,{
 			headers: {
 				'Content-Type': 'application/json',
 				'Authorization': `Bearer ${token}`,
@@ -43,40 +14,81 @@ var getTaskSummary=function(){
 		})
 		.then(response => response.json())
 		.then(data => {
-			var t={};
-			t.name='Incomplete';
-			t.task=data;
-			tasks.push(t);
-			
-			
-			fetch(`${hostname}/todo/tasks?status=Cancelled&sort=priority&order=DESC` ,{
-				headers: {
-					'Content-Type': 'application/json',
-					'Authorization': `Bearer ${token}`,
-				},
-			})
-			.then(response => response.json())
-			.then(data => {
+			counts=data;
+			if(data.success)
+				getTaskSummary();
+			else 
+				loginFirst();
+		})
+		.catch(error => console.error(error));
+	}
+	
+};
+
+
+var getTaskSummary=function(){
+	
+	const token = localStorage.getItem('token');
+	if(token===null)
+		loginFirst();
+	else{
+		
+		fetch(`${hostname}/todo/tasks?status=Completed&sort=priority&order=DESC` ,{
+			headers: {
+				'Content-Type': 'application/json',
+				'Authorization': `Bearer ${token}`,
+			},
+		})
+		.then(response => response.json())
+		.then(data => {
+			if(data.success){
 				var t={};
-				t.name='Cancelled';
+				t.name='Completed';
 				t.task=data;
 				tasks.push(t);
-				if(data.error!=='Invalid token')
-					renderReport();
 				
-				
-			})
-			.catch(error => console.error(error));
+				fetch(`${hostname}/todo/tasks?status=Incomplete&sort=priority&order=DESC`, {
+					headers: {
+						'Content-Type': 'application/json',
+						'Authorization': `Bearer ${token}`,
+					},
+				})
+				.then(response => response.json())
+				.then(data => {
+					var t={};
+					t.name='Incomplete';
+					t.task=data;
+					tasks.push(t);
+					
+					fetch(`${hostname}/todo/tasks?status=Cancelled&sort=priority&order=DESC` ,{
+						headers: {
+							'Content-Type': 'application/json',
+							'Authorization': `Bearer ${token}`,
+						},
+					})
+					.then(response => response.json())
+					.then(data => {
+						var t={};
+						t.name='Cancelled';
+						t.task=data;
+						tasks.push(t);
+						if(data.error!=='Invalid token')
+							renderReport();
+						
+						
+					})
+					.catch(error => console.error(error));
+					
+				})
+				.catch(error => console.error(error));
+			}
+			else 
+				loginFirst();
+			
 			
 		})
 		.catch(error => console.error(error));
-		
-		
-		
-	})
-	.catch(error => console.error(error));
-	
-	
+	}
 	
 };
 
@@ -148,11 +160,23 @@ var renderReport=function(){
 };
 
 
+var logout=function(){
+	event.preventDefault();
+	localStorage.removeItem('token');
+	window.location.href = '/';
+};
+
+
+
+var loginFirst=function(){
+	const header=document.getElementById("header");
+	header.innerHTML="";
+	const error = document.getElementById("error");
+	error.innerHTML=`<a href="${hostname}/auth/login">Login</a> First`;
+};
+
+
 window.onload = function() {
 	token = localStorage.getItem('token');
 	getCounts();
-};
-
-var logout=function(){
-	localStorage.removeItem('token');
 };
