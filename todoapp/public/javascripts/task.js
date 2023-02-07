@@ -5,7 +5,8 @@ var postTask= function(){
 	if(n.length!==0 && p.length!==0)
 	{
 		var data = { name: n, priority: p };
-	fetch(`${hostname}/todo/tasks/create`, {
+		const token = localStorage.getItem('token');
+		fetch(`${hostname}/todo/tasks/create`, {
 			method: 'POST', 
 			headers: {
 				'Content-Type': 'application/json',
@@ -49,6 +50,7 @@ var taskInput = function () {
 
 var put=function(statu,val){
 	var p = val;
+	const token = localStorage.getItem('token');
 	fetch(`${hostname}/todo/tasks/update`, {
 		method: 'PUT',
 		headers: {
@@ -80,6 +82,7 @@ var cancel=function(p){
 
 
 var del=function(p){
+	const token = localStorage.getItem('token');
 	fetch(`${hostname}/todo/tasks/delete`, {
 		method: 'DELETE',
 		headers: {
@@ -97,7 +100,7 @@ var del=function(p){
 };
 
 var loadTasks=function(){
-	
+	const token = localStorage.getItem('token');
 	fetch(`${hostname}/todo/tasks?sort=priority&order=DESC`,{
 		headers: {
 			'Content-Type': 'application/json',
@@ -181,6 +184,16 @@ var loadTasks=function(){
 	newT.appendChild(addTaskButton);
 	
 };
+
+var logout=function(){
+	const timestamp = new Date().getTime();
+    document.querySelectorAll('script[src],link[href]').forEach(element => {
+		element.src = `${element.src}?v=${timestamp}`;
+		element.href = `${element.href}?v=${timestamp}`;
+    });
+	localStorage.removeItem('token');
+};
+
 
 window.onload = function() {
 	loadTasks();

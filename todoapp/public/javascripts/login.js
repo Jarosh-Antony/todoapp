@@ -18,7 +18,8 @@ form.addEventListener("submit", function(event) {
 	.then(data => {
 		if(data.success){
 			event.preventDefault();
-			window.location.href = `/todo?token=${data.token}`;
+			localStorage.setItem('token',data.token);
+			window.location.href = '/todo';
 		}
 		else {
 			const error = document.getElementById("error");

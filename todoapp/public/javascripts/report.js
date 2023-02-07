@@ -1,6 +1,6 @@
 var counts={};
 var tasks=[];
-
+var token="";
 var getCounts=function(){
 	
 	fetch(`${hostname}/report/count`,{
@@ -149,5 +149,10 @@ var renderReport=function(){
 
 
 window.onload = function() {
+	token = localStorage.getItem('token');
 	getCounts();
+};
+
+var logout=function(){
+	localStorage.removeItem('token');
 };

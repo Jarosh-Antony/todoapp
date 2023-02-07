@@ -18,7 +18,8 @@ form.addEventListener("submit", function(event) {
 	.then(response => response.json())
 	.then(data => {
 		event.preventDefault();
-		window.location.href = `/todo?token=${data.token}`;
+		localStorage.setItem('token',data.token);
+		window.location.href = '/todo';
 	}).catch(error => console.error(error));
 	
 });

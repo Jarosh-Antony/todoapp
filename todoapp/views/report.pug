@@ -1,12 +1,11 @@
 extends layout
 
 block content
-	a(href=`/todo/?token=`+token) Back
+	a(href='/todo') Back
 	|&nbsp;&nbsp;&nbsp;&nbsp;
-	a(href=`/`) Logout
+	a(href='/' onclick='logout()') Logout
 	div#report
 
 	script.
-		var token = !{JSON.stringify(token)};
 		var hostname = "#{hostname}";
 	script(src='/javascripts/report.js')
