@@ -1,22 +1,23 @@
 extends layout
 
 block content
-		
-	div#intro
-		h1 Register
-	form#signup
-		div
-			label Name:
-			input(type='text', name='name', required=true)
-		div
-			label Email:
-			input(type='email', name='email', required=true)
-		div
-			label Password:
-			input(type='password', name='password', required=true)
-		div
-			input(type='submit', value='Register')
-	a(href='/auth/login') Log In
+	div#all
+		div#intro
+			h1 Register
+		div#error
+		form#signup
+			div
+				label Name:
+				input(type='text', name='name', required=true)
+			div
+				label Email:
+				input(type='email', name='email', required=true)
+			div
+				label Password:
+				input(type='password', name='password', required=true)
+			div
+				input(type='submit', value='Register')
+		a(href='/auth/login') Log In
 	script.
 		var hostname = "#{hostname}";
 	script(src='/javascripts/signup.js')

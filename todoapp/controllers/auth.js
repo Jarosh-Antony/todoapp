@@ -19,16 +19,16 @@ exports.api_login = (req, res) => {
 	dbOps.findOne('Users',req.body)
 	.then(result => {
 		if(result===null || result.length===0){
-			res.status(200).json({success:false,message:'Invalid email/password'});
+			res.status(401).send();
 		}
 		else {
 			const token = jwt.tokenize({ id:result._id });
-			res.status(200).json({success:true,token:token});
+			res.status(200).json({token:token});
 		}
 	})
 	.catch(err => {
 		console.error(err);
-		return res.status(500).send({ error: 'Internal Server Error' });
+		return res.status(500).send();
 	});
 };
 
@@ -44,12 +44,12 @@ exports.api_signup = (req, res) => {
 		.then(result => {
 			
 			const token = jwt.tokenize({ id:id });
-			res.status(200).json({success:true,token:token});
+			res.status(201).json({token:token});
 		})
 	})
 	.catch(err => {
 		console.error(err);
-		return res.status(500).send({ error: 'Internal Server Error' });
+		return res.status(500).send();
 	});
 };
 

@@ -18,13 +18,33 @@ var postTask= function(){
 				},
 				body: JSON.stringify(data) 
 			})
-			.then(response => response.json())
-			.then(data => {
-				if(data.success)
+			.then(response => {
+				if(response.status===201)
 					loadTasks();
-			});
+				else if(response.status===401)
+					loginFirst();
+				else if(response.status===500)
+					serverError();
+				else if(response.status===400){
+					const error=document.getElementById('error');
+					error.innerHTML='Enter valid values in both fields';
+				}
+				else 
+					somethingElse();
+			})
+			.catch(error => console.error(error));
 		}
 	}
+};
+
+var serverError=function(){
+	const all=document.getElementById('all');
+	all.innerHTML='Internal Server Error! Try again!';
+};
+
+var somethingElse=function(){
+	const all=document.getElementById('all');
+	all.innerHTML='Something went Wrong! Try again!';
 };
 
 var taskInput = function () {
@@ -72,10 +92,15 @@ var put=function(statu,val){
 				'status':statu,
 			})
 		})
-		.then(response => response.json())
-		.then(data => {
-			if(data.success)
+		.then(response => {
+			if(response.status===204)
 				loadTasks();
+			else if(response.status===401)
+				loginFirst();
+			else if(response.status===500)
+				serverError();
+			else 
+				somethingElse();
 		})
 		.catch(error => console.error(error));
 	}
@@ -109,10 +134,15 @@ var del=function(p){
 				'_id': p,
 			})
 		})
-		.then(response => response.json())
-		.then(data => {
-			if(data.success)
+		.then(response => {
+			if(response.status===204)
 				loadTasks();
+			else if(response.status===401)
+				loginFirst();
+			else if(response.status===500)
+				serverError();
+			else 
+				somethingElse();
 		})
 		.catch(error => console.error(error));
 	}
@@ -120,8 +150,8 @@ var del=function(p){
 
 
 var loginFirst=function(){
-	const header=document.getElementById("header");
-	header.innerHTML="";
+	const all=document.getElementById("all");
+	all.innerHTML="";
 	const error = document.getElementById("error");
 	error.innerHTML=`<a href="${hostname}/auth/login">Login</a> First`;
 };
@@ -139,84 +169,89 @@ var loadTasks=function(){
 				'Authorization': `Bearer ${token}`,
 			},
 		})
-		.then(response => response.json())
-		.then(data => {
-			if(data.success){
-				var newT = document.getElementById('tasks');
-				newT.innerHTML="";
-				
-				var ol = document.createElement("OL");
-				for(i in data.tasks){
-					var t=document.createElement("LI");
-					task=data.tasks[i]
+		.then(response => {
+			if(response.status===200){
+				response.json()
+				.then(data => {
+					var newT = document.getElementById('tasks');
+					newT.innerHTML="";
 					
-					
-					var T=task.name+' ( '+task.priority+' ) [ ';
-					if(task.status==='Completed'){
-						T+='&#x2713';
-					}
-					else if(task.status==='Cancelled'){
-						T+='&#x2717';
-					}
-					T+=']&nbsp;&nbsp;&nbsp;&nbsp;';
-					t.innerHTML=T;
-					
-					if(task.status !== 'Cancelled'){
+					var ol = document.createElement("OL");
+					for(i in data.tasks){
+						var t=document.createElement("LI");
+						task=data.tasks[i]
+						
+						
+						var T=task.name+' ( '+task.priority+' ) [ ';
+						if(task.status==='Completed'){
+							T+='&#x2713';
+						}
+						else if(task.status==='Cancelled'){
+							T+='&#x2717';
+						}
+						T+=']&nbsp;&nbsp;&nbsp;&nbsp;';
+						t.innerHTML=T;
+						
+						if(task.status !== 'Cancelled'){
+							
+							var statusButton = document.createElement('BUTTON');
+							statusButton.setAttribute('value',task._id);
+							statusButton.setAttribute('name','status');
+							
+							if(task.status==='Completed')
+							{
+								statusButton.addEventListener('click', (event) => {
+									incomplete(event.target.value);
+								});
+								statusButton.innerHTML='Incomplete';
+							}
+							else 
+							{
+								statusButton.addEventListener('click', (event) => {
+									complete(event.target.value);
+								});
+								statusButton.innerHTML='Completed';
+							}
+							t.appendChild(statusButton);
+							
+							statusButton = document.createElement('BUTTON');
+							statusButton.innerHTML='Cancel';
+							statusButton.setAttribute('value',task._id);
+							statusButton.addEventListener('click', (event) => {
+								cancel(event.target.value);
+							});
+							statusButton.setAttribute('name','status');
+							t.appendChild(statusButton);
+						}
 						
 						var statusButton = document.createElement('BUTTON');
+						statusButton.innerHTML='Delete';
 						statusButton.setAttribute('value',task._id);
-						statusButton.setAttribute('name','status');
-						
-						if(task.status==='Completed')
-						{
-							statusButton.addEventListener('click', (event) => {
-								incomplete(event.target.value);
-							});
-							statusButton.innerHTML='Incomplete';
-						}
-						else 
-						{
-							statusButton.addEventListener('click', (event) => {
-								complete(event.target.value);
-							});
-							statusButton.innerHTML='Completed';
-						}
-						t.appendChild(statusButton);
-						
-						statusButton = document.createElement('BUTTON');
-						statusButton.innerHTML='Cancel';
-						statusButton.setAttribute('value',task._id);
+						statusButton.setAttribute('name','delete');
 						statusButton.addEventListener('click', (event) => {
-							cancel(event.target.value);
+							del(event.target.value);
 						});
-						statusButton.setAttribute('name','status');
 						t.appendChild(statusButton);
+						
+						ol.appendChild(t);
 					}
+					newT.appendChild(ol);
+					var addTaskButton = document.createElement('BUTTON');
+					addTaskButton.innerHTML='+Add new task';
+					addTaskButton.setAttribute('name','newTask');
+					addTaskButton.addEventListener("click",taskInput);
 					
-					var statusButton = document.createElement('BUTTON');
-					statusButton.innerHTML='Delete';
-					statusButton.setAttribute('value',task._id);
-					statusButton.setAttribute('name','delete');
-					statusButton.addEventListener('click', (event) => {
-						del(event.target.value);
-					});
-					t.appendChild(statusButton);
-					
-					ol.appendChild(t);
-				}
-				newT.appendChild(ol);
-				var addTaskButton = document.createElement('BUTTON');
-				addTaskButton.innerHTML='+Add new task';
-				addTaskButton.setAttribute('name','newTask');
-				addTaskButton.addEventListener("click",taskInput);
-				
-				var newT = document.getElementById('new');
-				newT.innerHTML="";
-				newT.appendChild(addTaskButton);
+					var newT = document.getElementById('new');
+					newT.innerHTML="";
+					newT.appendChild(addTaskButton);
+				});
 			}
-			else {
-				loginFirst();
-			}
+			else if(response.status===401)
+				loadTasks();
+			else if(response.status===500)
+				serverError();
+			else 
+				somethingElse();
 		})
 		.catch(error => console.error(error));
 	}

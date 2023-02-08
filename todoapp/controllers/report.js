@@ -14,7 +14,7 @@ exports.count = (req, res) => {
 		
 		var id=v.id;
 		var query=req.query;
-		var counts={success:true,count:[]};
+		var counts={count:[]};
 		if(query.Status===undefined){
 			try{
 				dbOps.aggregator('Tasks',id)
@@ -46,7 +46,7 @@ exports.count = (req, res) => {
 						if(cancelled)
 							counts.count.push({'_id':'Cancelled','count':0});
 						
-						output={'success':true,'count':{}};
+						output={'count':{}};
 						for(i of counts.count){
 							output.count[i._id]=i.count;
 						}
@@ -62,7 +62,7 @@ exports.count = (req, res) => {
 				});
 			}catch(error){
 				console.error(error);
-				res.status(500).json({ error: 'Internal Server Error' });
+				res.status(500).send();
 			}
 		}
 		else {
@@ -71,7 +71,6 @@ exports.count = (req, res) => {
 					dbOps.findOne('Tasks',{id:id, status:"Deleted"})
 					.then(result => {
 						counts.count=result.count;
-						counts.success=true;
 						res.status(200).json(counts);
 					})
 					.catch(err => {
@@ -83,7 +82,6 @@ exports.count = (req, res) => {
 					dbOps.countDocuments('Tasks',query)
 					.then(result => {
 						counts.count=result;
-						counts.success=true;
 						res.status(200).json(counts);
 					})
 					.catch(err => {
@@ -92,11 +90,11 @@ exports.count = (req, res) => {
 				}
 			}catch(error){
 				console.error(error);
-				res.status(500).json({ error: 'Internal Server Error' });
+				res.status(500).send();
 			}
 		}
 	}
 	else 
-		res.status(200).json({ success:false,error: 'Invalid token' });
+		res.status(401).send();
 };
 

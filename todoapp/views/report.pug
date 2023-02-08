@@ -1,12 +1,13 @@
 extends layout
 
 block content
-	div#header
+	div#all
 		a(href='/todo') Back
 		|&nbsp;&nbsp;&nbsp;&nbsp;
 		a(href='' onclick='logout()') Logout
+		div#report
 	div#error
-	div#report
+	
 
 	script.
 		var hostname = "#{hostname}";

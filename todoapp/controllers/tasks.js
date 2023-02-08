@@ -52,7 +52,7 @@ exports.get = (req, res) => {
 			.then(unsorted => unsorted.sort(sortQ))
 			.then(result => result.toArray())
 			.then(result => {
-				tasks={success:true,'tasks':result};
+				tasks={'tasks':result};
 				res.status(200).json(tasks);
 			})
 			.catch(err => {
@@ -60,11 +60,11 @@ exports.get = (req, res) => {
 			});
 		}catch(error){
 			console.error(error);
-			res.status(500).json({ error: 'Internal Server Error' });
+			res.status(500).send();
 		}
 	}
 	else 
-		res.status(200).json({ success:false,error: 'Invalid token' });
+		res.status(401).send();
 };
 
 
@@ -75,7 +75,7 @@ exports.create = (req, res) => {
 	if(v.valid){
 		task=req.body;
 		if(task.name.length===0 && task.priority.length===0)
-			res.status(200).json({ status:false,error: 'Input cannot be empty'});
+			res.status(400).send();
 		else{
 			task['id']=v.id;
 			task['priority']=parseInt(task['priority'])
@@ -83,19 +83,19 @@ exports.create = (req, res) => {
 			try{
 				dbOps.insertOne('Tasks',task)
 				.then(result => {
-					res.status(201).json({success:true,message:'Successfully added'});
+					res.status(201).send();
 				})
 				.catch(err => {
 					throw err;
 				});
 			}catch(error){
 				console.error(error);
-				res.status(500).json({ error: 'Internal Server Error' });
+				res.status(500).send();
 			}
 		}
 	}
 	else 
-		res.status(200).json({ success:false,error: 'Invalid token'});
+		res.status(401).send();
 };
 
 
@@ -108,18 +108,18 @@ exports.update = (req, res) => {
 		try{
 			dbOps.updateOne('Tasks',{ _id: new ObjectID(task._id),id:v.id }, { $set: { status: task.status } })
 			.then(result => {
-				res.status(200).json({success:true});
+				res.status(204).send();
 			})
 			.catch(err => {
 				throw err;
 			});
 		}catch(error){
 			console.error(error);
-			return res.status(500).json({ error: 'Internal Server Error' });
+			return res.status(500).send();
 		}
 	}
 	else 
-		res.status(200).json({ success:false,error: 'Invalid token'});
+		res.status(401).send();
 };
 
 
@@ -135,7 +135,7 @@ exports.remove = (req, res) => {
 			.then(result => {
 				dbOps.updateOne('Tasks',{ id:v.id,status:'Deleted' },  { $inc: { count: 1 } })
 				.then(result => {
-					res.status(200).json({success:true});
+					res.status(204).send();
 				})
 				.catch(err => {
 					throw err;
@@ -147,10 +147,10 @@ exports.remove = (req, res) => {
 			});
 		}catch(error){
 			console.error(error);
-			res.status(500).json({ success:false,error: 'Internal Server Error' });
+			res.status(500).send();
 		}
 	}
 	else 
-		res.status(200).json({ success:false,error: 'Invalid token'});
+		res.status(401).send();
 };
 

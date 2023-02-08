@@ -1,13 +1,14 @@
 extends layout
 
 block content
-	div#header
+	div#all
 		a(href='/report') Report
 		|&nbsp;&nbsp;&nbsp;&nbsp;
 		a(href='' onclick='logout()') Logout
+		div#tasks
+		div#new
+	
 	div#error
-	div#tasks
-	div#new
 	script.
 		var hostname = "#{hostname}";
 	script(src='/javascripts/task.js')

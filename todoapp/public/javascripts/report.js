@@ -12,17 +12,34 @@ var getCounts=function(){
 				'Authorization': `Bearer ${token}`,
 			},
 		})
-		.then(response => response.json())
-		.then(data => {
-			counts=data;
-			if(data.success)
-				getTaskSummary();
-			else 
+		.then(response => {
+			if(response.status===200){
+				response.json()
+				.then(data => {
+					counts=data;
+					getTaskSummary();
+				});
+			}
+			else if(response.status===401)
 				loginFirst();
+			else if(response.status===500)
+				serverError();
+			else 
+				somethingElse();
 		})
 		.catch(error => console.error(error));
 	}
 	
+};
+
+var serverError=function(){
+	const all=document.getElementById('all');
+	all.innerHTML='Internal Server Error! Try again!';
+};
+
+var somethingElse=function(){
+	const all=document.getElementById('all');
+	all.innerHTML='Something went Wrong! Try again!';
 };
 
 
@@ -39,53 +56,72 @@ var getTaskSummary=function(){
 				'Authorization': `Bearer ${token}`,
 			},
 		})
-		.then(response => response.json())
-		.then(data => {
-			if(data.success){
-				var t={};
-				t.name='Completed';
-				t.task=data;
-				tasks.push(t);
-				
-				fetch(`${hostname}/todo/tasks?status=Incomplete&sort=priority&order=DESC`, {
-					headers: {
-						'Content-Type': 'application/json',
-						'Authorization': `Bearer ${token}`,
-					},
-				})
-				.then(response => response.json())
+		.then(response => {
+			if(response.status===200){
+				response.json()
 				.then(data => {
 					var t={};
-					t.name='Incomplete';
+					t.name='Completed';
 					t.task=data;
 					tasks.push(t);
 					
-					fetch(`${hostname}/todo/tasks?status=Cancelled&sort=priority&order=DESC` ,{
+					fetch(`${hostname}/todo/tasks?status=Incomplete&sort=priority&order=DESC`, {
 						headers: {
 							'Content-Type': 'application/json',
 							'Authorization': `Bearer ${token}`,
 						},
 					})
-					.then(response => response.json())
-					.then(data => {
-						var t={};
-						t.name='Cancelled';
-						t.task=data;
-						tasks.push(t);
-						if(data.error!=='Invalid token')
-							renderReport();
-						
-						
+					.then(response => {
+						if(response.status===200){
+							response.json()
+							.then(data => {
+								var t={};
+								t.name='Incomplete';
+								t.task=data;
+								tasks.push(t);
+								
+								fetch(`${hostname}/todo/tasks?status=Cancelled&sort=priority&order=DESC` ,{
+									headers: {
+										'Content-Type': 'application/json',
+										'Authorization': `Bearer ${token}`,
+									},
+								})
+								.then(response => {
+									if(response.status===200){
+										response.json()
+										.then(data => {
+											var t={};
+											t.name='Cancelled';
+											t.task=data;
+											tasks.push(t);
+											if(data.error!=='Invalid token')
+												renderReport();
+										})
+									}
+									else if(reponse.status===401)
+										loginFirst();
+									else if(response.status===500)
+										serverError();
+									else 
+										somethingElse();
+								})
+							})
+						}
+						else if(reponse.status===401)
+							loginFirst();
+						else if(response.status===500)
+							serverError();
+						else 
+							somethingElse();
 					})
-					.catch(error => console.error(error));
-					
 				})
-				.catch(error => console.error(error));
 			}
-			else 
+			else if(reponse.status===401)
 				loginFirst();
-			
-			
+			else if(response.status===500)
+				serverError();
+			else 
+				somethingElse();
 		})
 		.catch(error => console.error(error));
 	}
@@ -169,8 +205,8 @@ var logout=function(){
 
 
 var loginFirst=function(){
-	const header=document.getElementById("header");
-	header.innerHTML="";
+	const all=document.getElementById("all");
+	all.innerHTML="";
 	const error = document.getElementById("error");
 	error.innerHTML=`<a href="${hostname}/auth/login">Login</a> First`;
 };
